@@ -2,6 +2,7 @@
 #![recursion_limit = "128"]
 
 extern crate proc_macro;
+extern crate proc_macro2;
 #[macro_use]
 extern crate quote;
 extern crate syn;
@@ -11,78 +12,34 @@ use syn::*;
 
 #[proc_macro_attribute]
 pub fn deco(attr: TokenStream, func: TokenStream) -> TokenStream {
-    let func = Function::parse(func);
+    let func = func.into();
     let attr = parse_attr(attr);
-    let vis = &func.vis;
-    let fn_token = &func.fn_token;
-    let ident = &func.ident;
-    let inputs = &func.inputs;
-    let output = &func.output;
-    let block = &func.block;
+    let item_fn: ItemFn = syn::parse2(func).expect("Input is not a function");
+    let vis = &item_fn.vis;
+    let ident = &item_fn.ident;
+    let block = &item_fn.block;
 
-    let input_values = func.input_values();
+    let decl: FnDecl = *item_fn.decl;
+    let inputs = &decl.inputs;
+    let output = &decl.output;
+
+    let input_values: Vec<_> = inputs
+        .iter()
+        .map(|arg| match arg {
+            &FnArg::Captured(ref val) => &val.pat,
+            _ => unreachable!(""),
+        })
+        .collect();
 
     let caller = quote!{
-        #vis #fn_token #ident(#inputs) #output {
+        #vis fn #ident(#inputs) #output {
             let f = #attr(deco_internal);
             return f(#(#input_values,) *);
 
-            #fn_token deco_internal(#inputs) #output #block
+            fn deco_internal(#inputs) #output #block
         }
     };
     caller.into()
-}
-
-#[derive(Debug)]
-struct Function {
-    attrs: Vec<Attribute>,
-    ident: Ident,
-    vis: Visibility,
-    block: Box<Block>,
-    unsafety: Option<token::Unsafe>,
-    inputs: punctuated::Punctuated<FnArg, token::Comma>,
-    output: ReturnType,
-    fn_token: token::Fn,
-}
-
-impl Function {
-    pub fn parse(func: TokenStream) -> Self {
-        let ItemFn {
-            attrs,
-            ident,
-            vis,
-            block,
-            decl,
-            unsafety,
-            ..
-        } = ::syn::parse(func.clone()).unwrap();
-        let FnDecl {
-            inputs,
-            output,
-            fn_token,
-            ..
-        } = { *decl };
-        Function {
-            attrs,
-            ident,
-            vis,
-            block,
-            unsafety,
-            inputs,
-            output,
-            fn_token,
-        }
-    }
-
-    pub fn input_values(&self) -> Vec<&Pat> {
-        self.inputs
-            .iter()
-            .map(|arg| match arg {
-                &FnArg::Captured(ref val) => &val.pat,
-                _ => unreachable!(""),
-            })
-            .collect()
-    }
 }
 
 fn parse_attr(attr: TokenStream) -> Ident {
