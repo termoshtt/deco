@@ -12,6 +12,5 @@ proc-macro2 = "0.3"
 
 [dependencies.syn]
 version = "0.13"
-features = ["full", "parsing", "printing", "extra-traits"]
-default-features = false
+features = ["full", "extra-traits"]
 
