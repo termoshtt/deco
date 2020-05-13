@@ -18,15 +18,11 @@ where
     }
 }
 
-// #[deco(logging("test.log"))]
-// fn add2(i: i32) -> i32 {
-//     i + 2
-// }
-
+#[deco(logging("test.log"))]
 fn add2(i: i32) -> i32 {
     i + 2
 }
 
 fn main() {
-    logging("test.log")(add2)(2);
+    add2(2);
 }
