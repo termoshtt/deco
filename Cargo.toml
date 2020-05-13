@@ -2,15 +2,11 @@
 name = "deco"
 version = "0.1.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
+edition = "2018"
 
 [lib]
 proc-macro = true
 
 [dependencies]
-quote = "0.5"
-proc-macro2 = "0.3"
-
-[dependencies.syn]
-version = "0.13"
-features = ["full", "extra-traits"]
-
+quote = "1.0.4"
+syn = { version = "1.0.20", features = ["full", "extra-traits"] }

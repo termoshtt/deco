@@ -1,6 +1,3 @@
-#![feature(proc_macro)]
-
-extern crate deco;
 use deco::deco;
 
 fn logging<F>(func: F) -> impl Fn(i32) -> i32
