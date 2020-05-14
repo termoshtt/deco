@@ -4,7 +4,7 @@
 //! --------
 //!
 //! ```
-//! use deco::deco;
+//! use pydeco::deco;
 //!
 //! fn logging<F>(func: F) -> impl Fn(i32) -> i32
 //! where
@@ -29,7 +29,7 @@
 //! - Decorator with parameter
 //!
 //! ```
-//! use deco::deco;
+//! use pydeco::deco;
 //! use std::{fs, io::Write};
 //!
 //! fn logging<InputFunc: 'static>(
