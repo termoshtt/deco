@@ -4,6 +4,13 @@ version = "0.1.0"
 authors = ["Toshiki Teramura <toshiki.teramura@gmail.com>"]
 edition = "2018"
 
+description   = "Python-like decorator for Rust"
+documentation = "https://docs.rs/pydeco"
+repository    = "https://github.com/termoshtt/deco"
+keywords      = ["proc-macro"]
+license       = "MIT"
+readme        = "README.md"
+
 [lib]
 proc-macro = true
 
